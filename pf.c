@@ -209,8 +209,8 @@ int main(int argc, char* argv[])
 	START();
 	const char* test_data = "Hello world!";
 	unsigned long base = 0;
-	//while ((c = getchar()) != EOF)
-	while ((c = *test_data++))
+	while ((c = getchar()) != EOF)
+	//while ((c = *test_data++))
 	{
 		if (!c) c = 256;
 		mpz_set_ui(temp, c);
