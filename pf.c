@@ -170,18 +170,15 @@ void mpz_print(mpz_t op)
 
 void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
 {
-	buf_init(out, in->size);
-	memcpy(out->buffer, in->buffer, in->size);
-	// TODO Run "program"
-
 	struct assreg* reg1 = mk_reg(1, NULL);
 	buf_init0(reg1->buf);
-	struct assreg* reg0 = mk_reg(0, reg1);
-	buf_copy(reg0->buf, in);
-	struct assreg* regs = reg0;
+
+	struct assreg* regs = mk_reg(0, reg1);
+	buf_copy(regs->buf, in);
 
 	maybe(argc > 1);
 	interp(&regs, (const char**)argv, 1, argc);
+	buf_move(out, reg1->buf);
 	while (regs) regs = dl_reg(regs);
 }
 
