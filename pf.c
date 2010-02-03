@@ -284,5 +284,7 @@ int main(int argc, char* argv[])
 	//decode_bijective(out);
 	mpz_clear(out);
 
+	mpfr_free_cache();
+
 	return 0;
 }
