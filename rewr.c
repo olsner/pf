@@ -57,6 +57,8 @@ struct assreg* lup(struct assreg** reg, int i)
 	return lup(&a->next, i);
 }
 
+#define eqand(a,b,mask) (!(((a) ^ (b)) & (mask)))
+
 void doop(buffer_t* in, const char* f, const char* fe, const char* t, const char* te, buffer_t* out)
 {
 	maybe(in);
@@ -73,8 +75,8 @@ void doop(buffer_t* in, const char* f, const char* fe, const char* t, const char
 	{
 		const char* r2 = r;
 		const char* fr = f;
-		while (fr < fe && r2 < re && *fr++ == *r2++);
-		if (fr <= fe)
+		while (fr < fe && r2 < re && eqand(*fr, *r2, 3)) fr++, r2++;
+		if (fr < fe)
 		{
 			r++;
 			continue;

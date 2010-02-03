@@ -180,6 +180,11 @@ void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
 	interp(&regs, (const char**)argv, 1, argc);
 	buf_move(out, reg1->buf);
 	while (regs) regs = dl_reg(regs);
+
+	char* p = out->buffer;
+	const char* end = p + out->size;
+	while (p < end)
+		*p++ &= 3;
 }
 
 void print_ts_diff(const char* name, int line, struct timespec *start, struct timespec *end)
