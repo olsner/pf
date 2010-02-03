@@ -122,8 +122,14 @@ unsome base (k,xs) = sum (zipWith (*) (iterate (/ base) (base ** fromIntegral k)
 	assert(input == in->buffer + in->size);
 	T("decode loop");
 
+	mpfr_clear(coeff);
+	mpfr_clear(temp);
+	mpfr_clear(inv_base);
+
 	mpfr_get_z(out, sum, GMP_RNDU);
 	T("mpfr_get_z");
+
+	mpfr_clear(sum);
 }
 
 void print_digits(buffer_t buffer)
@@ -231,11 +237,13 @@ int main(int argc, char* argv[])
 	buffer_t buffer;
 	encode_in_base(pi, in_f, buffer);
 	T("encode_in_base");
+	mpfr_clear(in_f);
 
 	print_digits(buffer);
 	T("print_digits");
 	decode_in_base(pi, out, buffer);
 	T("decode_in_base");
+	mpfr_clear(pi);
 	//mpz_print(out);
 	if (mpz_cmp(in, out))
 	{
@@ -249,12 +257,15 @@ int main(int argc, char* argv[])
 		mpz_print(out);
 	}
 	assert(0 == mpz_cmp(in, out));
+	mpz_clear(in);
 	T("mpz_cmp");
 	decode_bijective(out);
 	T("decode_bijective");
 
 	buffer_t out_buffer;
 	run_program(buffer, out_buffer, argc, argv);
+	buf_clear(buffer);
+	T("run program");
 
 	mpfr_t e;
 	mpfr_init2(e, 256);
@@ -265,11 +276,11 @@ int main(int argc, char* argv[])
 	mpfr_set_prec(e, num_bits);
 	mpfr_const_e(e, GMP_RNDN);
 
-	/* For debugging, change 'e' to 'pi' to make sure it's */
 	decode_in_base(e, out, out_buffer);
 	mpfr_clear(e);
+	buf_clear(out_buffer);
 
-	//mpz_print(out);
+	mpz_print(out);
 	//decode_bijective(out);
 	mpz_clear(out);
 
