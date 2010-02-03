@@ -17,6 +17,7 @@ struct assreg* mk_reg(int i, struct assreg* next)
 struct assreg* dl_reg(struct assreg* reg)
 {
 	struct assreg* ret = reg->next;
+	buf_clear(reg->buf);
 	free(reg);
 	return ret;
 }
@@ -28,16 +29,16 @@ void no()
 }
 #define maybe(i) if (i) ; else no()
 
-buffer_t* lup(struct assreg** reg, int i)
+struct assreg* lup(struct assreg** reg, int i)
 {
 	if (!reg || !*reg)
 	{
-		return &(*reg = mk_reg(i, *reg))->buf;
+		return *reg = mk_reg(i, *reg);
 	}
 	struct assreg* a = *reg;
 	if (a->index == i)
 	{
-		return &a->buf;
+		return a;
 	}
 	struct assreg* b = a->next;
 	if (b && b->index == i)
@@ -51,7 +52,7 @@ buffer_t* lup(struct assreg** reg, int i)
 		*reg = b;
 		a->next = c;
 		b->next = a;
-		return &b->buf;
+		return b;
 	}
 	return lup(&a->next, i);
 }
@@ -85,7 +86,7 @@ void doop(buffer_t* in, const char* f, const char* fe, const char* t, const char
 	}
 }
 
-void interp(struct assreg* regs, const char** prog, size_t ip, size_t proglen)
+void interp(struct assreg** regs, const char** prog, size_t ip, size_t proglen)
 {
 	while (ip < proglen)
 	{
@@ -105,7 +106,9 @@ void interp(struct assreg* regs, const char** prog, size_t ip, size_t proglen)
 		maybe(end != s3);
 		maybe(!*end);
 
-		doop(lup(&regs, i0), s, s2-1, s2, s3-1, lup(&regs, i1));
+		struct assreg* r0 = lup(regs, i0);
+		struct assreg* r1 = lup(regs, i1);
+		doop(&r0->buf, s, s2-1, s2, s3-1, &r1->buf);
 
 		if (i1 == 1) { printf("Output written. Done.\n"); break; }
 		ip++;

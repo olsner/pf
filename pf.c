@@ -175,7 +175,8 @@ void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
 	struct assreg* regs = reg0;
 
 	maybe(argc > 1);
-	interp(regs, (const char**)argv, 1, argc);
+	interp(&regs, (const char**)argv, 1, argc);
+	while (regs) regs = dl_reg(regs);
 }
 
 void print_ts_diff(const char* name, int line, struct timespec *start, struct timespec *end)

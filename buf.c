@@ -23,4 +23,8 @@ void buf_append(buffer_t out, const char* p, const char* end)
 	memcpy(out->buffer + oldsz, p, sz);
 	out->size = newsz;
 }
-
+void buf_clear(buffer_t buf)
+{
+	free(buf->buffer);
+	memset(buf, 0, sizeof(buf));
+}
