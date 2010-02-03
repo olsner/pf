@@ -84,6 +84,7 @@ void doop(buffer_t* in, const char* f, const char* fe, const char* t, const char
 		buf_append(*out, t, te);
 		rw = r = r2;
 	}
+	buf_append(*out, rw, re);
 }
 
 void interp(struct assreg** regs, const char** prog, size_t ip, size_t proglen)
