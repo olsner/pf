@@ -1,22 +1,22 @@
 
-struct assreg
+struct reg
 {
 	int index;
 	buffer_t buf;
 
-	struct assreg* next;
+	struct reg* next;
 };
 
-struct assreg* mk_reg(int i, struct assreg* next)
+struct reg* mk_reg(int i, struct reg* next)
 {
-	struct assreg* ret = (struct assreg*)calloc(1, sizeof(struct assreg));
+	struct reg* ret = (struct reg*)calloc(1, sizeof(struct reg));
 	ret->index = i;
 	ret->next = next;
 	return ret;
 }
-struct assreg* dl_reg(struct assreg* reg)
+struct reg* dl_reg(struct reg* reg)
 {
-	struct assreg* ret = reg->next;
+	struct reg* ret = reg->next;
 	buf_clear(reg->buf);
 	free(reg);
 	return ret;
@@ -29,18 +29,18 @@ void no()
 }
 #define maybe(i) if (i) ; else no()
 
-struct assreg* lup(struct assreg** reg, int i)
+struct reg* lup(struct reg** reg, int i)
 {
 	if (!reg || !*reg)
 	{
 		return *reg = mk_reg(i, *reg);
 	}
-	struct assreg* a = *reg;
+	struct reg* a = *reg;
 	if (a->index == i)
 	{
 		return a;
 	}
-	struct assreg* b = a->next;
+	struct reg* b = a->next;
 	if (b && b->index == i)
 	{
 		// * -> a -> b -> c => * -> b -> a -> c
@@ -48,7 +48,7 @@ struct assreg* lup(struct assreg** reg, int i)
 		// a.next = c
 		// b.next = a
 		// *.next = b
-		struct assreg* c = b->next;
+		struct reg* c = b->next;
 		*reg = b;
 		a->next = c;
 		b->next = a;
@@ -89,7 +89,7 @@ void doop(buffer_t* in, const char* f, const char* fe, const char* t, const char
 	buf_append(*out, rw, re);
 }
 
-void interp(struct assreg** regs, const char** prog, size_t ip, size_t proglen)
+void interp(struct reg** regs, const char** prog, size_t ip, size_t proglen)
 {
 	while (ip < proglen)
 	{
@@ -109,8 +109,8 @@ void interp(struct assreg** regs, const char** prog, size_t ip, size_t proglen)
 		maybe(end != s3);
 		maybe(!*end);
 
-		struct assreg* r0 = lup(regs, i0);
-		struct assreg* r1 = lup(regs, i1);
+		struct reg* r0 = lup(regs, i0);
+		struct reg* r1 = lup(regs, i1);
 		doop(&r0->buf, s, s2-1, s2, s3-1, &r1->buf);
 
 		if (i1 == 1) { printf("Output written. Done.\n"); break; }
