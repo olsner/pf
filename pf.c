@@ -24,7 +24,7 @@ static void print_ts_diff(const char* file, const char* name, int line, struct t
 #include "rewr.c"
 #include "base.c"
 
-void print_digits(buffer_t buffer)
+static void print_digits(buffer_t buffer)
 {
 	int i;
 	printf("Digits: %u.\n", (unsigned)buffer->size);
@@ -37,7 +37,7 @@ void print_digits(buffer_t buffer)
 }
 
 // TODO Is this really the *de*coder? It actually *encodes* the integer as a digit-string...
-void decode_bijective(mpz_t m)
+static void decode_bijective(mpz_t m)
 {
 	while (mpz_cmp_ui(m, 0))
 	{
@@ -53,14 +53,14 @@ void decode_bijective(mpz_t m)
 	}
 }
 
-void mpz_print(mpz_t op)
+static void mpz_print(mpz_t op)
 {
 	mpz_out_str(stdout, 10, op);
 	putchar('\n');
 	fflush(stdout);
 }
 
-void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
+static void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
 {
 	struct reg* reg1 = mk_reg(1, NULL);
 	buf_init0(reg1->buf);
@@ -79,7 +79,7 @@ void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
 		*p++ &= 3;
 }
 
-void print_ts_diff(const char* file, const char* name, int line, struct timespec *start, struct timespec *end)
+static void print_ts_diff(const char* file, const char* name, int line, struct timespec *start, struct timespec *end)
 {
 	double sdiff = end->tv_sec - start->tv_sec;
 	double nsdiff = end->tv_nsec - start->tv_nsec;

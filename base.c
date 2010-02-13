@@ -1,4 +1,4 @@
-void encode_in_base(const mpfr_t base, const mpfr_t in, buffer_t out)
+static void encode_in_base(const mpfr_t base, const mpfr_t in, buffer_t out)
 {
 	char* output;
 
@@ -47,7 +47,7 @@ void encode_in_base(const mpfr_t base, const mpfr_t in, buffer_t out)
 	mpfr_clear(x);
 }
 
-void decode_in_base(const mpfr_t base, mpz_t out, buffer_t in)
+static void decode_in_base(const mpfr_t base, mpz_t out, buffer_t in)
 {
 	/*
 unsome :: (Floating a, RealFrac a) => a -> (Integer, [Integer]) -> a
