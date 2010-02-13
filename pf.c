@@ -9,14 +9,14 @@
 #include <gmp.h>
 #include <mpfr.h>
 
-static void print_ts_diff(const char* name, int line, struct timespec* start, struct timespec * end);
+static void print_ts_diff(const char* file, const char* name, int line, struct timespec* start, struct timespec * end);
 
 #define START() struct timespec __ts_prev; \
 	clock_gettime(CLOCK_REALTIME, &__ts_prev)
 #define T(name) do { \
 	struct timespec ts; \
 	clock_gettime(CLOCK_REALTIME, &ts); \
-	print_ts_diff(name, __LINE__, &__ts_prev, &ts); \
+	print_ts_diff(__FILE__, name, __LINE__, &__ts_prev, &ts); \
 } while (0)
 
 #include "buf.c"
@@ -187,11 +187,11 @@ void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
 		*p++ &= 3;
 }
 
-void print_ts_diff(const char* name, int line, struct timespec *start, struct timespec *end)
+void print_ts_diff(const char* file, const char* name, int line, struct timespec *start, struct timespec *end)
 {
 	double sdiff = end->tv_sec - start->tv_sec;
 	double nsdiff = end->tv_nsec - start->tv_nsec;
-	printf("TIME " __FILE__ ":%d %s: %fs\n", line, name, sdiff + nsdiff / 1000000000.0);
+	printf("TIME %s:%d %s: %fs\n", file, line, name, sdiff + nsdiff / 1000000000.0);
 	memcpy(start, end, sizeof(struct timespec));
 }
 
