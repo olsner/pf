@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 	buf_clear(out_buffer);
 
 	mpz_print(out);
-	//decode_bijective(out);
+	decode_bijective(out);
 	mpz_clear(out);
 
 	mpfr_free_cache();
