@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 	mpz_init(out);
 
 	START();
-	const char* test_data = "Hello world!";
+	//const char* test_data = "Hello world!";
 	unsigned long base = 0;
 	while ((c = getchar()) != EOF)
 	//while ((c = *test_data++))
