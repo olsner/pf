@@ -31,5 +31,5 @@ static void buf_append(buffer_t out, const char* p, const char* end)
 static void buf_clear(buffer_t buf)
 {
 	free(buf->buffer);
-	memset(buf, 0, sizeof(buf));
+	memset(buf, 0, sizeof(*buf));
 }
