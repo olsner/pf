@@ -3,8 +3,10 @@ static void encode_in_base(const mpfr_t base, const mpfr_t in, buffer_t out)
 	char* output;
 
 	mp_prec_t bits = mpfr_get_prec(base);
+#if DEBUG
 	mp_prec_t bits2 = mpfr_get_prec(in);
 	printf("Encoding with %d bits (input: %d bits)\n", (int)bits, (int)bits2);
+#endif
 
 	mpfr_t x;
 	mpfr_init2(x, bits);
@@ -38,10 +40,12 @@ static void encode_in_base(const mpfr_t base, const mpfr_t in, buffer_t out)
 	T("mpfr_modf/mul loop");
 
 	mpfr_mul(x, x, base, GMP_RNDN);
+#if DEBUG
 	printf("Residual: ");
 	mpfr_out_str(stdout, 10, 0, x, GMP_RNDN);
 	printf("\n");
 	T("mpfr_out_str");
+#endif
 
 	mpfr_clear(d_k);
 	mpfr_clear(x);
@@ -59,10 +63,14 @@ unsome base (k,xs) = sum (zipWith (*) (iterate (/ base) (base ** fromIntegral k)
 
 	// We may need log2(k) extra bits for storing the sum with full precision.
 	mp_prec_t bits = mpfr_get_prec(base);
+#if DEBUG
 	printf("mp_prec_t has %d bits\n", (int)(sizeof(bits)*8));
 	printf("decode_in_base has %d bits in base and %d digits\n", (int)bits, k);
+#endif
 	bits += 3000;
+#if DEBUG
 	printf("decode_in_base is trying to use %d bits.\n", (int)bits);
+#endif
 
 	START();
 	mpfr_t sum;
@@ -85,7 +93,9 @@ unsome base (k,xs) = sum (zipWith (*) (iterate (/ base) (base ** fromIntegral k)
 
 	while (k--)
 	{
+#if DEBUG
 		printf("%d (%d): %d\n", (int)(input - in->buffer), k, *input);
+#endif
 		//mpfr_pow_ui(coeff, base, k, GMP_RNDN);
 		mpfr_mul_ui(temp, coeff, *input++, GMP_RNDN);
 		/*mpfr_out_str(stdout, 10, 0, coeff, GMP_RNDN);

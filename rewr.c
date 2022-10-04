@@ -93,12 +93,12 @@ void interp(struct reg** regs, const char** prog, size_t ip, size_t proglen)
 {
 	while (ip < proglen)
 	{
-		printf("Run %d: \"%s\"\n", (int)ip, prog[ip]);
+		if (DEBUG) printf("Run %d: \"%s\"\n", (int)ip, prog[ip]);
 
 		char* end, *s, *s2, *s3;
 		int i0 = strtol(prog[ip], &end, 10);
 		maybe(*end++ == '/');
-		if (!*end) { printf("GOTO %d\n", i0); ip = i0; continue; }
+		if (!*end) { if (DEBUG) printf("GOTO %d\n", i0); ip = i0; continue; }
 		s = end;
 		s2 = strchr(s, '/');
 		maybe(s2++);
@@ -113,7 +113,7 @@ void interp(struct reg** regs, const char** prog, size_t ip, size_t proglen)
 		struct reg* r1 = lup(regs, i1);
 		doop(&r0->buf, s, s2-1, s2, s3-1, &r1->buf);
 
-		if (i1 == 1) { printf("Output written. Done.\n"); break; }
+		if (i1 == 1) { if (DEBUG) printf("Output written. Done.\n"); break; }
 		ip++;
 	}
 }

@@ -11,6 +11,8 @@
 
 static void print_ts_diff(const char* file, const char* name, int line, struct timespec* start, struct timespec * end);
 
+#define DEBUG 0
+
 #define START() struct timespec __ts_prev; \
 	clock_gettime(CLOCK_REALTIME, &__ts_prev)
 #define T(name) do { \
@@ -26,6 +28,7 @@ static void print_ts_diff(const char* file, const char* name, int line, struct t
 
 static void print_digits(buffer_t buffer)
 {
+#if DEBUG
 	int i;
 	printf("Digits: %u.\n", (unsigned)buffer->size);
 	for (i = 0; i < buffer->size; i++)
@@ -34,6 +37,7 @@ static void print_digits(buffer_t buffer)
 	}
 	printf(".\n");
 	fflush(stdout);
+#endif
 }
 
 // TODO Is this really the *de*coder? It actually *encodes* the integer as a digit-string...
@@ -55,9 +59,11 @@ static void decode_bijective(mpz_t m)
 
 static void mpz_print(mpz_t op)
 {
+#if DEBUG
 	mpz_out_str(stdout, 10, op);
 	putchar('\n');
 	fflush(stdout);
+#endif
 }
 
 static void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
@@ -81,10 +87,12 @@ static void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
 
 static void print_ts_diff(const char* file, const char* name, int line, struct timespec *start, struct timespec *end)
 {
+#if DEBUG
 	double sdiff = end->tv_sec - start->tv_sec;
 	double nsdiff = end->tv_nsec - start->tv_nsec;
 	printf("TIME %s:%d %s: %fs\n", file, line, name, sdiff + nsdiff / 1000000000.0);
 	memcpy(start, end, sizeof(struct timespec));
+#endif
 }
 
 int main(int argc, char* argv[])
@@ -153,8 +161,10 @@ int main(int argc, char* argv[])
 	assert(0 == mpz_cmp(in, out));
 	mpz_clear(in);
 	T("mpz_cmp");
+#if DEBUG
 	decode_bijective(out);
 	T("decode_bijective");
+#endif
 
 	buffer_t out_buffer;
 	run_program(buffer, out_buffer, argc, argv);
