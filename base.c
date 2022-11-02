@@ -32,7 +32,7 @@ static void encode_in_base(const mpfr_t base, const mpfr_t in, buffer_t out)
 	do
 	{
 		mpfr_modf(d_k, x, x, GMP_RNDN);
-		*output++ = mpfr_get_uchar(d_k);
+		*output++ = '0' + (mpfr_get_uchar(d_k) & 3);
 		mpfr_mul(x, x, base, GMP_RNDN);
 	}
 	while (k--);
@@ -94,10 +94,10 @@ unsome base (k,xs) = sum (zipWith (*) (iterate (/ base) (base ** fromIntegral k)
 	while (k--)
 	{
 #if DEBUG
-		printf("%d (%d): %d\n", (int)(input - in->buffer), k, *input);
+		printf("%d (%d): %d\n", (int)(input - in->buffer), k, *input & 3);
 #endif
 		//mpfr_pow_ui(coeff, base, k, GMP_RNDN);
-		mpfr_mul_ui(temp, coeff, *input++, GMP_RNDN);
+		mpfr_mul_ui(temp, coeff, *input++ & 3, GMP_RNDN);
 		/*mpfr_out_str(stdout, 10, 0, coeff, GMP_RNDN);
 		printf("\n");*/
 		mpfr_add(sum, sum, temp, GMP_RNDN);

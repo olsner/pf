@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -26,16 +27,25 @@ static void print_ts_diff(const char* file, const char* name, int line, struct t
 #include "rewr.c"
 #include "base.c"
 
+#if DEBUG
 static void print_digits(buffer_t buffer)
 {
-#if DEBUG
 	int i;
 	printf("Digits: %u.\n", (unsigned)buffer->size);
 	for (i = 0; i < buffer->size; i++)
 	{
-		printf("%d\t%u\n", i, buffer->buffer[i]);
+		printf("%d\t%u\n", i, buffer->buffer[i] & 3);
 	}
 	printf(".\n");
+	fflush(stdout);
+}
+#endif
+
+static void mpz_print(mpz_t op)
+{
+#if DEBUG
+	mpz_out_str(stdout, 10, op);
+	putchar('\n');
 	fflush(stdout);
 #endif
 }
@@ -55,15 +65,6 @@ static void decode_bijective(mpz_t m)
 		}
 		putchar(r);
 	}
-}
-
-static void mpz_print(mpz_t op)
-{
-#if DEBUG
-	mpz_out_str(stdout, 10, op);
-	putchar('\n');
-	fflush(stdout);
-#endif
 }
 
 static void run_program(const buffer_t in, buffer_t out, int argc, char* argv[])
@@ -141,6 +142,7 @@ int main(int argc, char* argv[])
 	T("encode_in_base");
 	mpfr_clear(in_f);
 
+#if DEBUG
 	print_digits(buffer);
 	T("print_digits");
 	decode_in_base(pi, out, buffer);
@@ -161,7 +163,6 @@ int main(int argc, char* argv[])
 	assert(0 == mpz_cmp(in, out));
 	mpz_clear(in);
 	T("mpz_cmp");
-#if DEBUG
 	decode_bijective(out);
 	T("decode_bijective");
 #endif
@@ -173,9 +174,13 @@ int main(int argc, char* argv[])
 
 	mpfr_t e;
 	mpfr_init2(e, 256);
+	// Estimate number of bits as log2(exp(#digits))
 	mpfr_exp_ui(e, out_buffer->size, GMP_RNDU);
 	mpfr_log2(e, e, GMP_RNDU);
 	num_bits = mpfr_get_ui(e, GMP_RNDU);
+	// May need a better calculation on the number of bits above, before
+	// multiplying by 4 we got rounding errors already on "Hello world!\n".
+	num_bits *= 4;
 
 	mpfr_set_prec(e, num_bits);
 	mpfr_const_e(e, GMP_RNDN);
